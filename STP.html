@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STP - Processos de Atendimento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* Cores Tech/Modernas */
+        :root {
+            --color-primary: #0077B6; /* Azul Tech */
+            --color-secondary: #00B4D8; /* Ciano Light */
+            --color-bg-light: #E0F7FA; /* Muito Claro */
+            --color-text-dark: #03045E; /* Azul Escuro (quase preto) */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC; /* Cor de fundo mais clara e suave */
+            color: var(--color-text-dark);
+        }
+        
+        .nav-tab {
+            padding: 0.75rem 1.5rem; 
+            border-radius: 0.75rem; 
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+        }
+        
+        .tab-active {
+            background-color: var(--color-primary); 
+            color: white;
+            box-shadow: 0 6px 12px -2px rgba(0, 119, 182, 0.3); 
+        }
+        
+        .tab-inactive {
+            background-color: white; 
+            color: var(--color-primary);
+            border: 2px solid var(--color-secondary);
+        }
+        
+        .tab-inactive:hover {
+            background-color: var(--color-bg-light);
+        }
+        
+        .content-pane {
+            background-color: white;
+            border-radius: 1rem; 
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08); 
+            padding: 2rem 2.5rem; 
+        }
+        
+        .form-section-title {
+            font-size: 1.5rem; 
+            font-weight: 700;
+            color: var(--color-primary);
+            border-bottom: 3px solid var(--color-secondary); 
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-section-title span {
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600; 
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            border-radius: 0.5rem;
+            border: 1px solid #CBD5E1;
+            padding: 0.75rem 1rem; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: #F8FAFC; 
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-secondary); 
+            background-color: white;
+        }
+
+        /* Estilo para campos somente leitura (copiados) */
+        .form-input[readonly] {
+            background-color: var(--color-bg-light); 
+            font-weight: 700;
+            color: var(--color-text-dark);
+        }
+        
+        .form-check-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #F8FAFC; 
+            padding: 1rem 1.25rem;
+            border-radius: 0.6rem;
+            border-left: 5px solid var(--color-secondary); 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-check-label {
+            font-weight: 600;
+            color: var(--color-text-dark);
+        }
+        
+        .form-check-description {
+            font-size: 0.875rem;
+            color: #64748B;
+        }
+        
+        /* Botões */
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.6rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary, .print-button { 
+            background-color: var(--color-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover, .print-button:hover {
+            background-color: #005A91; 
+            box-shadow: 0 6px 10px -2px rgba(0, 119, 182, 0.4);
+        }
+        
+        .btn-secondary {
+            background-color: #E2E8F0;
+            color: #475569;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #CBD5E1;
+        }
+        
+        .btn-email {
+            background-color: #FCD34D; 
+            color: #854D0E;
+        }
+        
+        .btn-email:hover {
+            background-color: #FBBF24;
+        }
+
+        /* Contêiner de botões de ação */
+        .action-buttons-container {
+            display: flex;
+            flex-direction: column; 
+            gap: 1rem;
+            margin-top: 1.5rem; 
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (min-width: 640px) { 
+            .action-buttons-container {
+                flex-direction: row;
+            }
+        }
+
+
+        /* --- Estilos de Impressão --- */
+        @media print {
+            body {
+                background-color: #ffffff;
+            }
+            
+            .action-buttons-container, header, nav { 
+                 display: none !important;
+            }
+
+            .content-pane {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .content-pane.hidden {
+                display: none !important;
+            }
+            
+            .content-pane:not(.hidden) {
+                display: block !important;
+            }
+
+            .form-section-title {
+                color: #000000;
+                border-color: #999999;
+                font-size: 1.5rem;
+            }
+            
+            .form-check-item, .form-input, .form-textarea {
+                page-break-inside: avoid;
+            }
+
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+        }
+        /* --- Fim dos Estilos de Impressão --- */
+
+    </style>
+</head>
+<body class="text-gray-900">
+
+    <div class="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
+        
+        <header class="mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[var(--color-primary)]">💻 STP - Painel de Processos</h1>
+            <p class="text-xl text-gray-500 mt-2">Gestão de Chamados: Triagem, Nível 1 e Escalonamento.</p>
+        </header>
+
+        <nav class="flex flex-wrap gap-3 md:gap-4 mb-8 print:hidden">
+            <button id="tab-triagem" class="nav-tab tab-active">
+                <span>👤</span> Triagem (Atendente)
+            </button>
+            <button id="tab-n1" class="nav-tab tab-inactive">
+                <span>⚙️</span> Nível 1 (Campo)
+            </button>
+            <button id="tab-n2" class="nav-tab tab-inactive">
+                <span>☁️</span> Escalonamento N2
+            </button>
+        </nav>
+
+        <main>
+            <section id="pane-triagem" class="content-pane">
+                <form id="form-triagem">
+                    <h2 class="form-section-title"><span>📝</span> 1. Coleta de Dados e Agendamento</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 mb-6">
+                        <div class="md:col-span-2">
+                            <label for="triagem_nome" class="form-label">Nome Completo do Cliente</label>
+                            <input type="text" id="triagem_nome" class="form-input" placeholder="Ex: João da Silva">
+                        </div>
+                        <div>
+                            <label for="triagem_cpf" class="form-label">CPF/CNPJ (ID do Chamado)</label>
+                            <input type="text" id="triagem_cpf" class="form-input" placeholder="Ex: 123.456.789-00" oninput="formatCpfCnpj(this)">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="triagem_contato" class="form-label">Telefone/WhatsApp</label>
+                            <input type="tel" id="triagem_contato" class="form-input" placeholder="Ex: (21) 98287-9176">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="triagem_endereco" class="form-label">Endereço Completo do Serviço</label>
+                            <input type="text" id="triagem_endereco" class="form-input" placeholder="Ex: Rua das Flores, 123, Niterói">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label for="triagem_problema" class="form-label">Breve descrição do problema (pelo cliente)</label>
+                            <textarea id="triagem_problema" rows="3" class="form-textarea" placeholder="Ex: Minhas câmeras pararam de funcionar..."></textarea>
+                        </div>
+                    </div>
+
+                    <h2 class="form-section-title"><span>💡</span> 2. Triagem Remota (Solução Rápida)</h2>
+                    <p class="text-sm text-gray-500 mb-4 -mt-4">
+                        Tente resolver problemas simples antes de deslocar o N1.
+                    </p>
+                    <div class="space-y-4 mb-6">
+                        <div class="form-check-item">
+                            <div>
+                                <p class="form-check-label">Energia</p>
+                                <p class="form-check-description">A luz de "Power" (câmera, DVR, roteador) está acesa?</p>
+                            </div>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <div>
+                                <p class="form-check-label">Reinicialização</p>
+                                <p class="form-check-description">O cliente já tentou desligar e religar o equipamento?</p>
+                            </div>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <div>
+                                <p class="form-check-label">Rede (Roteador)</p>
+                                <p class="form-check-description">O roteador está conectado e as luzes de internet estão OK?</p>
+                            </div>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <div>
+                                <p class="form-check-label">Acesso Físico</p>
+                                <p class="form-check-description">Alguém estará no local para receber o N1?</p>
+                            </div>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h2 class="form-section-title"><span>💸</span> 3. Gestão de Expectativa (Preço vs. Realidade)</h2>
+                    <p class="text-sm text-gray-500 mb-4 -mt-4">
+                        Alinhe os custos com o cliente para evitar atritos.
+                    </p>
+                    <div class="space-y-4 mb-6">
+                        <div class="form-check-item">
+                            <p class="form-check-label">Serviço é manutenção/instalação?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Preço final será fechado após avaliação N1 *in loco*?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Peças e cabos necessários serão orçados à parte?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Cliente concorda com o prazo de atendimento (ex: 24h/48h)?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                    </div>
+                    
+                    <h2 class="form-section-title"><span>🚀</span> Ações da Triagem</h2>
+                    
+                    <div class="action-buttons-container">
+                        <button type="button" onclick="generatePdf('Triagem')" class="print-button btn font-bold w-full sm:w-auto">
+                            <span>🖨️</span> 1. GERAR PDF
+                        </button>
+                        <button type="button" class="btn btn-secondary w-full sm:w-auto justify-center" onclick="finalizeService('Triagem')">
+                            <span>✅</span> Resolvido Remotamente (Finalizar)
+                        </button>
+                    </div>
+                    
+                </form>
+            </section>
+
+            <section id="pane-n1" class="content-pane hidden">
+                <form id="form-n1">
+                    <h2 class="form-section-title"><span>📝</span> 0. Contexto do Chamado (Da Triagem)</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 mb-6">
+                        <div class="md:col-span-2">
+                            <label class="form-label">Cliente</label>
+                            <input type="text" id="n1_copy_nome" class="form-input" readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">ID/CPF (Referência)</label>
+                            <input type="text" id="n1_copy_cpf" class="form-input" readonly>
+                        </div>
+                    </div>
+                    
+                    <h2 class="form-section-title"><span>⚡</span> 1. Verificações Iniciais (Hardware e Energia)</h2>
+                    <div class="space-y-4 mb-6">
+                        <div class="form-check-item">
+                            <p class="form-check-label">Fonte de alimentação (DVR/Câmeras/Roteador) testada?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Conexão do cabo de força firme e sem danos?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">LEDs de status normais (verde/azul)?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Nenhum sinal visível de superaquecimento ou dano físico?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h2 class="form-section-title"><span>🔌</span> 2. Camada Física e Cabeamento</h2>
+                    <div class="space-y-4 mb-6">
+                        <div class="form-check-item">
+                            <p class="form-check-label">Integridade do cabeamento (sem cortes/danos)?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Conectores (BNC/RJ45) testados e com crimpagem OK?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Ponto de rede OK para outros equipamentos (teste c/ laptop)?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Comprimento do cabo dentro do limite técnico?</p>
+                            <select class="form-select w-32">
+                                <option>Pendente</option>
+                                <option>Ok</option>
+                                <option>Falha</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h2 class="form-section-title"><span>📊</span> 3. Documentação e Fechamento N1</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+                        <div>
+                            <label for="n1_diagnostico" class="form-label">Diagnóstico N1 (Problema físico e solução)</label>
+                            <textarea id="n1_diagnostico" rows="3" class="form-textarea" placeholder="Ex: Cabo da câmera 2 rompido. Feita a troca do conector."></textarea>
+                        </div>
+                        <div>
+                            <label for="n1_popup" class="form-label">POP UP de Venda (Melhoria sugerida)</label>
+                            <textarea id="n1_popup" rows="3" class="form-textarea" placeholder="Ex: Sugerida troca da fonte por uma de maior amperagem."></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="n1_tempo" class="form-label">Tempo Gasto (em minutos)</label>
+                            <input type="number" id="n1_tempo" class="form-input" placeholder="Ex: 60">
+                        </div>
+                    </div>
+
+                    <h2 class="form-section-title"><span>✅</span> Ações N1</h2>
+                    
+                    <div class="action-buttons-container">
+                        <button type="button" class="btn btn-primary w-full sm:w-auto justify-center" onclick="finalizeService('Nível 1')">
+                            <span>✅</span> Serviço Concluído (Falha Física Resolvida)
+                        </button>
+                        <button type="button" onclick="generatePdf('Nível 1')" class="print-button btn font-bold w-full sm:w-auto">
+                            <span>🖨️</span> GERAR PDF
+                        </button>
+                    </div>
+                </form>
+            </section>
+            
+            <section id="pane-n2" class="content-pane hidden">
+                <form id="form-n2">
+                    <h2 class="form-section-title"><span>🔗</span> 1. Dados Básicos do Chamado</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 mb-6">
+                        <div>
+                            <label for="n2_id" class="form-label">ID do Chamado/Cliente (CPF/CNPJ)</label>
+                            <input type="text" id="n2_id" class="form-input" placeholder="Referência da Triagem" readonly>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="form-label">Nome do Cliente</label>
+                            <input type="text" id="n2_copy_nome" class="form-input" readonly>
+                        </div>
+                        <div>
+                            <label for="n2_n1" class="form-label">Técnico N1 Responsável</label>
+                            <input type="text" id="n2_n1" class="form-input">
+                        </div>
+                        <div>
+                            <label for="n2_data" class="form-label">Data/Hora da Passagem</label>
+                            <input type="datetime-local" id="n2_data" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <h2 class="form-section-title"><span>🛡️</span> 2. Status da Camada Física (Garantia do N1)</h2>
+                    <p class="text-sm text-gray-500 mb-4 -mt-4">
+                        O N2 só deve atuar se a camada física estiver 100% OK.
+                    </p>
+                    <div class="space-y-4 mb-6">
+                        <div class="form-check-item">
+                            <p class="form-check-label">Todos os equipamentos estão ligados e sem danos físicos?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Cabeamento e conectores (camada física) testados e 100% OK?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">N1 confirmou que há sinal de internet/rede no local?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                    </div>
+                    
+                    <h2 class="form-section-title"><span>💻</span> 3. Necessidade de Configuração (Foco do N2)</h2>
+                    <div class="space-y-4 mb-6">
+                        <div class="form-check-item">
+                            <p class="form-check-label">Cliente precisa de acesso via celular/computador?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Configuração de IP/Portas do DVR/NVR necessária?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="form-check-item">
+                            <p class="form-check-label">Necessidade de integração com outros sistemas (ex: alarme)?</p>
+                            <input type="checkbox" class="h-5 w-5 text-[var(--color-primary)] rounded">
+                        </div>
+                        <div class="mt-4">
+                            <label for="n2_outros" class="form-label">Outra falha de software/lógica (Detalhar)</label>
+                            <textarea id="n2_outros" rows="2" class="form-textarea" placeholder="Ex: POP UP de vendas aparecendo no DVR..."></textarea>
+                        </div>
+                    </div>
+
+                    <h2 class="form-section-title"><span>🔑</span> 4. Credenciais e Contato</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+                        <div>
+                            <label for="n2_roteador" class="form-label">Login/Senha do Roteador</label>
+                            <input type="text" id="n2_roteador" class="form-input">
+                        </div>
+                        <div>
+                            <label for="n2_dvr" class="form-label">Login/Senha do DVR/NVR</label>
+                            <input type="text" id="n2_dvr" class="form-input">
+                        </div>
+                        <div>
+                            <label for="n2_software" class="form-label">Software Usado (App)</label>
+                            <input type="text" id="n2_software" class="form-input" placeholder="Ex: Hik-Connect, Intelbras Cloud">
+                        </div>
+                        <div>
+                            <label for="n2_horario" class="form-label">Melhor Horário para Contato N2</label>
+                            <input type="text" id="n2_horario" class="form-input" placeholder="Ex: Falar com João após 18h">
+                        </div>
+                    </div>
+
+                    <div class="action-buttons-container">
+                        <button type="button" class="btn btn-primary w-full sm:w-auto justify-center" onclick="finalizeService('Nível 2')">
+                            <span>✅</span> Serviço Concluído (Falha Lógica Resolvida) 
+                        </button>
+                        <div class="w-full sm:w-auto"></div> 
+                        <button type="button" onclick="generatePdf('Nível 2')" class="print-button btn font-bold w-full sm:w-auto">
+                            <span>🖨️</span> GERAR PDF
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Lista de e-mails do Suporte N1
+        const N1_SUPPORT_EMAILS = [
+            'igorlimeira@souunisuam.com.br',
+            'alex.alessandro342@gmail.com',
+            'igorlimeira7@gmail.com',
+            'alex.alessandro6666@gmail.com'
+        ];
+
+        function formatCpfCnpj(field) {
+            let value = field.value.replace(/\D/g, ''); 
+
+            if (value.length <= 11) { // CPF
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else { // CNPJ
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                value = value.replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+            }
+
+            field.value = value;
+        }
+
+        function copyTriagemData() {
+            const nome = document.getElementById('triagem_nome').value;
+            const cpf = document.getElementById('triagem_cpf').value;
+
+            // 1. Copia para o Nível 1
+            const n1Nome = document.getElementById('n1_copy_nome');
+            const n1Cpf = document.getElementById('n1_copy_cpf');
+            if (n1Nome) n1Nome.value = nome;
+            if (n1Cpf) n1Cpf.value = cpf;
+
+            // 2. Copia para o Nível 2
+            const n2Nome = document.getElementById('n2_copy_nome');
+            const n2Cpf = document.getElementById('n2_id');
+            if (n2Nome) n2Nome.value = nome;
+            if (n2Cpf) n2Cpf.value = cpf;
+        }
+        
+        function sendEmail(level) {
+            // Garante que os dados da Triagem estejam prontos para N1/N2 se o usuário não tiver clicado no botão
+            if (level === 'Nível 1' || level === 'Nível 2') {
+                copyTriagemData();
+            }
+
+            let subject = '';
+            let body = '';
+            let recipient = ''; 
+
+            const cpf = document.getElementById('triagem_cpf').value || 'ID_PENDENTE';
+            
+            if (level === 'Triagem') {
+                // A validação de CPF é feita na função generatePdf agora
+                
+                // Define o destinatário para a lista de suporte N1
+                recipient = N1_SUPPORT_EMAILS.join(',');
+                subject = `STP-SUPORTE-N1 - CHAMADO ID ${cpf} - Encaminhamento para N1`;
+                
+                const nome = document.getElementById('triagem_nome').value;
+                const contato = document.getElementById('triagem_contato').value;
+                const endereco = document.getElementById('triagem_endereco').value;
+                const problema = document.getElementById('triagem_problema').value;
+                
+                body = `[RELATÓRIO DE TRIAGEM ID: ${cpf}]\n\n`;
+                body += `Prezado Suporte N1,\n\n`;
+                body += `Este chamado foi triado e encaminhado para atendimento de campo (Nível 1).\n\n`;
+                body += `**ANEXAR PDF:** Por favor, verifique o arquivo PDF em anexo contendo o relatório completo da triagem e os dados do cliente.\n\n`;
+                body += `Cliente: ${nome}\n`;
+                body += `Contato: ${contato}\n`;
+                body += `Endereço: ${endereco}\n\n`;
+                body += `Problema (Cliente): ${problema}\n\n`;
+                body += `AÇÃO: Encaminhado para agendamento e atendimento Nível 1 (Campo).`;
+
+            } else if (level === 'Nível 1') {
+                // Para o relatório do N1, deixamos o 'to' vazio para o usuário escolher o destinatário 
+                subject = `STP - CHAMADO ID ${cpf} - Diagnóstico N1`;
+                const diagnostico = document.getElementById('n1_diagnostico').value;
+                const popup = document.getElementById('n1_popup').value;
+                const tempo = document.getElementById('n1_tempo').value;
+                
+                body = `[DIAGNÓSTICO NÍVEL 1 - ID: ${cpf}]\n\n`;
+                body += `Diagnóstico: ${diagnostico}\n`;
+                body += `Tempo Gasto: ${tempo} minutos\n\n`;
+                body += `POP UP de Venda (Sugestão de Melhoria):\n${popup}`;
+
+            } else if (level === 'Nível 2') {
+                // Para o relatório do N2, deixamos o 'to' vazio para o usuário escolher o destinatário 
+                subject = `STP - CHAMADO ID ${cpf} - Diagnóstico N2`;
+                body = `[DIAGNÓSTICO NÍVEL 2 - ID: ${cpf}]\n\n`;
+                body += `O chamado foi concluído no Nível 2 (Falha Lógica Resolvida).\n`;
+                body += `Detalhes do Escalonamento N2 documentados no PDF anexado.`;
+            }
+
+            // Constrói o link mailto
+            const mailtoLink = `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // TÉCNICA PARA FORÇAR A ABERTURA DO CLIENTE DE E-MAIL
+            const tempLink = document.createElement('a');
+            tempLink.href = mailtoLink;
+            tempLink.style.display = 'none';
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            document.body.removeChild(tempLink);
+            
+            return true;
+        }
+
+        // NOVA FUNÇÃO SIMPLES: Apenas gera PDF
+        function generatePdf(level) {
+            
+            // Validação de CPF/CNPJ para o nível Triagem (mantida como boa prática)
+            if (level === 'Triagem') {
+                const cpf = document.getElementById('triagem_cpf').value || 'ID_PENDENTE';
+                if (!cpf || cpf === 'ID_PENDENTE' || cpf.replace(/\D/g, '').length < 11) {
+                    alert('ERRO: Por favor, preencha o campo CPF/CNPJ (ID do Chamado) com um valor válido antes de gerar o PDF.');
+                    return; 
+                }
+            }
+            
+            // Apenas chama a função de impressão/salvar PDF
+            window.print();
+        }
+
+        function finalizeService(level) {
+            let message = '';
+            let formToClear = null;
+
+            if (level === 'Triagem') {
+                message = 'SUCESSO! Chamado resolvido remotamente. O formulário de Triagem foi limpo para o próximo atendimento.';
+                formToClear = 'form-triagem';
+            } else if (level === 'Nível 1') {
+                message = 'SUCESSO! Serviço de campo (Falha Física) concluído e documentado.';
+            } else if (level === 'Nível 2') {
+                message = 'SUCESSO! Escalonamento (Falha Lógica) concluído e documentado.';
+            }
+
+            alert(message);
+            
+            if (formToClear) {
+                document.getElementById(formToClear).reset();
+            }
+        }
+
+        window.onload = function () {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const panes = document.querySelectorAll('.content-pane');
+            
+            const triagemPane = document.getElementById('pane-triagem');
+            if (triagemPane) {
+                triagemPane.classList.remove('hidden');
+            }
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetPaneId = tab.id.replace('tab-', 'pane-');
+                    
+                    tabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
+                    });
+                    
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+                    
+                    panes.forEach(pane => {
+                        if (pane.id === targetPaneId) {
+                            pane.classList.remove('hidden');
+                        } else {
+                            pane.classList.add('hidden');
+                        }
+                    });
+
+                    // Chama a função de cópia de dados ao trocar de painel
+                    if (targetPaneId !== 'pane-triagem') {
+                        copyTriagemData();
+                    }
+                });
+            });
+        };
+    </script>
+</body>
+</html>
