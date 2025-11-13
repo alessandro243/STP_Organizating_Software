@@ -9,17 +9,16 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        /* Cores Tech/Modernas */
         :root {
-            --color-primary: #0077B6; /* Azul Tech */
-            --color-secondary: #00B4D8; /* Ciano Light */
-            --color-bg-light: #E0F7FA; /* Muito Claro */
-            --color-text-dark: #03045E; /* Azul Escuro (quase preto) */
+            --color-primary: #0077B6;
+            --color-secondary: #00B4D8; 
+            --color-bg-light: #E0F7FA; 
+            --color-text-dark: #03045E; 
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F8FAFC; /* Cor de fundo mais clara e suave */
+            background-color: #F8FAFC;
             color: var(--color-text-dark);
         }
         
@@ -95,7 +94,6 @@
             background-color: white;
         }
 
-        /* Estilo para campos somente leitura (copiados) */
         .form-input[readonly] {
             background-color: var(--color-bg-light); 
             font-weight: 700;
@@ -123,7 +121,6 @@
             color: #64748B;
         }
         
-        /* Botões */
         .btn {
             font-weight: 600;
             padding: 0.75rem 1.5rem;
@@ -164,7 +161,6 @@
             background-color: #FBBF24;
         }
 
-        /* Contêiner de botões de ação */
         .action-buttons-container {
             display: flex;
             flex-direction: column; 
@@ -179,8 +175,6 @@
             }
         }
 
-
-        /* --- Estilos de Impressão --- */
         @media print {
             body {
                 background-color: #ffffff;
@@ -220,7 +214,6 @@
                 margin: 2cm;
             }
         }
-        /* --- Fim dos Estilos de Impressão --- */
 
     </style>
 </head>
@@ -350,7 +343,7 @@
                     
                     <div class="action-buttons-container">
                         <button type="button" onclick="generatePdf('Triagem')" class="print-button btn font-bold w-full sm:w-auto">
-                            <span>🖨️</span> 1. GERAR PDF
+                            <span>🖨️</span> 1. GERAR RELATÓRIO
                         </button>
                         <button type="button" class="btn btn-secondary w-full sm:w-auto justify-center" onclick="finalizeService('Triagem')">
                             <span>✅</span> Resolvido Remotamente (Finalizar)
@@ -469,7 +462,7 @@
                             <span>✅</span> Serviço Concluído (Falha Física Resolvida)
                         </button>
                         <button type="button" onclick="generatePdf('Nível 1')" class="print-button btn font-bold w-full sm:w-auto">
-                            <span>🖨️</span> GERAR PDF
+                            <span>🖨️</span> GERAR RELATÓRIO
                         </button>
                     </div>
                 </form>
@@ -562,7 +555,7 @@
                         </button>
                         <div class="w-full sm:w-auto"></div> 
                         <button type="button" onclick="generatePdf('Nível 2')" class="print-button btn font-bold w-full sm:w-auto">
-                            <span>🖨️</span> GERAR PDF
+                            <span>🖨️</span> GERAR RELATÓRIO
                         </button>
                     </div>
                 </form>
@@ -571,7 +564,6 @@
     </div>
 
     <script>
-        // Lista de e-mails do Suporte N1
         const N1_SUPPORT_EMAILS = [
             'igorlimeira@souunisuam.com.br',
             'alex.alessandro342@gmail.com',
@@ -582,11 +574,11 @@
         function formatCpfCnpj(field) {
             let value = field.value.replace(/\D/g, ''); 
 
-            if (value.length <= 11) { // CPF
+            if (value.length <= 11) {
                 value = value.replace(/(\d{3})(\d)/, '$1.$2');
                 value = value.replace(/(\d{3})(\d)/, '$1.$2');
                 value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            } else { // CNPJ
+            } else {
                 value = value.replace(/^(\d{2})(\d)/, '$1.$2');
                 value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
                 value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
@@ -614,7 +606,6 @@
         }
         
         function sendEmail(level) {
-            // Garante que os dados da Triagem estejam prontos para N1/N2 se o usuário não tiver clicado no botão
             if (level === 'Nível 1' || level === 'Nível 2') {
                 copyTriagemData();
             }
@@ -626,9 +617,7 @@
             const cpf = document.getElementById('triagem_cpf').value || 'ID_PENDENTE';
             
             if (level === 'Triagem') {
-                // A validação de CPF é feita na função generatePdf agora
-                
-                // Define o destinatário para a lista de suporte N1
+            
                 recipient = N1_SUPPORT_EMAILS.join(',');
                 subject = `STP-SUPORTE-N1 - CHAMADO ID ${cpf} - Encaminhamento para N1`;
                 
@@ -648,7 +637,7 @@
                 body += `AÇÃO: Encaminhado para agendamento e atendimento Nível 1 (Campo).`;
 
             } else if (level === 'Nível 1') {
-                // Para o relatório do N1, deixamos o 'to' vazio para o usuário escolher o destinatário 
+                
                 subject = `STP - CHAMADO ID ${cpf} - Diagnóstico N1`;
                 const diagnostico = document.getElementById('n1_diagnostico').value;
                 const popup = document.getElementById('n1_popup').value;
@@ -660,17 +649,15 @@
                 body += `POP UP de Venda (Sugestão de Melhoria):\n${popup}`;
 
             } else if (level === 'Nível 2') {
-                // Para o relatório do N2, deixamos o 'to' vazio para o usuário escolher o destinatário 
+                
                 subject = `STP - CHAMADO ID ${cpf} - Diagnóstico N2`;
                 body = `[DIAGNÓSTICO NÍVEL 2 - ID: ${cpf}]\n\n`;
                 body += `O chamado foi concluído no Nível 2 (Falha Lógica Resolvida).\n`;
                 body += `Detalhes do Escalonamento N2 documentados no PDF anexado.`;
             }
 
-            // Constrói o link mailto
             const mailtoLink = `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            // TÉCNICA PARA FORÇAR A ABERTURA DO CLIENTE DE E-MAIL
+
             const tempLink = document.createElement('a');
             tempLink.href = mailtoLink;
             tempLink.style.display = 'none';
@@ -681,10 +668,8 @@
             return true;
         }
 
-        // NOVA FUNÇÃO SIMPLES: Apenas gera PDF
         function generatePdf(level) {
             
-            // Validação de CPF/CNPJ para o nível Triagem (mantida como boa prática)
             if (level === 'Triagem') {
                 const cpf = document.getElementById('triagem_cpf').value || 'ID_PENDENTE';
                 if (!cpf || cpf === 'ID_PENDENTE' || cpf.replace(/\D/g, '').length < 11) {
@@ -693,7 +678,6 @@
                 }
             }
             
-            // Apenas chama a função de impressão/salvar PDF
             window.print();
         }
 
@@ -745,8 +729,7 @@
                             pane.classList.add('hidden');
                         }
                     });
-
-                    // Chama a função de cópia de dados ao trocar de painel
+                    
                     if (targetPaneId !== 'pane-triagem') {
                         copyTriagemData();
                     }
