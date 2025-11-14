@@ -6,8 +6,8 @@ Abaixo o link para um vídeo demonstrativo sobre o funcionamento do SOSTP:
 
 <p align='center' style="font-size: 15px"><b>Demo do servidor:</b></p>
 <div align="center">
-  <a href="https://www.youtube.com/watch?v=0YLoEgbq0yo">
-    <img src="gifdemo.gif" width="600" />
+  <a href="https://www.youtube.com/watch?v=0YLoEgbq0yo](https://www.youtube.com/watch?v=rbA1JpR1piQ">
+    <img src="https://br.pinterest.com/pin/1059753356081479474/" width="600" />
   </a>
 </div>
 <p align='center' style="font-size: 10px">Clique para ver o conteúdo completo.</p>
