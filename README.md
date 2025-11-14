@@ -4,7 +4,7 @@
 Esse é um programa feito para testar a adaptação da equipe a um sistema de padronização e automatização. Nós desenvolvemos o SOSTP para superar a lacuna comunicativa entre as equipes de suporte imediato e de tecnicos de campo, pois um das dificuldades relatadas mais presentes nas pesquisas com colaboradores da STP foi que não havia um padrão nas requisições feitas à equipe técnica pela equipe de atendimento primário. Nesse sentido o SOSPT estabelece uma forma única de fazer essas requisições.
 Abaixo o link para um vídeo demonstrativo sobre o funcionamento do SOSTP:
 
-<p align='center' style="font-size: 15px"><b>Demo do servidor:</b></p>
+<p align='center' style="font-size: 15px"><b>Demo do SOSTP:</b></p>
 <div align="center">
   <a href="https://www.youtube.com/watch?v=rbA1JpR1piQ">
     <img src="https://br.pinterest.com/pin/1059753356081479474/" width="600" />
